@@ -1,0 +1,784 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=Noto+Sans+Georgian:wght@300..800&display=swap');
+@import "tailwindcss";
+
+/* =========================================================================
+   GEO DAIRY DESIGN SYSTEM
+   Direction: warm paper surfaces + precise technical framing. Layered cream
+   neutrals carry the interface; one green accent punctuates it; hairline
+   guides, corner marks and mono metadata supply the engineering register the
+   brief asks for (§12.1 "agricultural-industrial rather than rustic").
+   ========================================================================= */
+@theme {
+  /* Inter and Inter Tight were the default pairing of every generated site on
+     the internet, and the page wore it. Archivo is a grotesque with signage
+     lineage — it carries weight at display size the way industrial lettering
+     does — over IBM Plex Sans, which was drawn for an engineering company and
+     already had its monospace sibling in this system. Three faces, one family
+     of intent: industrial, engineered, legible. */
+  --font-sans: "IBM Plex Sans", "Noto Sans Georgian", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", "Noto Sans Georgian", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Noto Sans Georgian", ui-monospace, SFMono-Regular, monospace;
+
+  /* Sharp. The brief asks for agricultural-industrial rather than rustic, and
+     a 4px radius on everything is the visual equivalent of hedging. Pills and
+     dots keep their full radius; nothing else has one. */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+
+  /* Neutrals — warm, layered, low-contrast separation */
+  --color-ink: #0B1A14;
+  --color-graphite: #16241E;
+  --color-slate: #46564F;
+  --color-muted: #5F6B65;
+  --color-line: #E2E3DA;
+  --color-line-strong: #CFD2C7;
+  --color-mist: #ECEDE5;
+  --color-parchment: #F1F0E8;
+  --color-cream: #F6F5F0;
+  --color-milk: #FCFBF7;
+
+  /* Master brand — read from the logo artwork's own pixels
+     (public/brand/geo-dairy-mark.png), not estimated.
+
+     Both logo colours are FILLS, not text colours: the green is 3.03:1 on paper
+     and the yellow 1.49:1, so neither may carry body copy. `brand-deep` is the
+     text-safe descendant of the green — 5.42:1 on cream, and white on it reads
+     5.92:1, so it works as both a link colour and a button ground. The yellow is
+     11:1 against ink, which is exactly how the lockup uses it: a fill on dark. */
+  --color-brand: #43A047;        /* logo green — fills, bars, accents */
+  --color-brand-deep: #2A7230;   /* text, buttons, links */
+  --color-brand-soft: #E8F2E8;
+  --color-signal: #F4C543;       /* logo yellow — on dark only */
+
+  /* Direction accents (swatch + text-safe ink) */
+  --color-ecosystem: #1F7A8C;
+  --color-ecosystem-ink: #14606F;
+  --color-trade: #B07A2B;
+  --color-trade-ink: #8A5B12;
+  --color-service: #3D5A80;
+  --color-service-ink: #2E4666;
+  --color-supply: #6B7F4E;
+  --color-supply-ink: #4F613A;
+  --color-production: #43A047;
+  --color-production-ink: #2A7230;
+
+  --spacing-gutter: clamp(1.25rem, 4vw, 4.5rem);
+}
+
+:root {
+  /* Small components that appear on both grounds resolve through tokens, so a
+     dark section inverts them by context instead of by prop-drilling. */
+  --crumb: var(--color-muted);
+  --crumb-active: var(--color-ink);
+  --crumb-sep: var(--color-line-strong);
+  --tag-bg: rgba(246, 245, 240, 0.7);
+  --tag-border: var(--color-line);
+  --tag-fg: var(--color-slate);
+
+  /* Layered neutral elevation. One strength per component state. */
+  --shadow-sm:
+    0 2px 3px -1px rgba(11, 26, 20, 0.07),
+    0 1px 0 0 rgba(11, 26, 20, 0.02),
+    0 0 0 1px rgba(11, 26, 20, 0.05);
+  --shadow-md:
+    0 0 0 1px rgba(11, 26, 20, 0.05),
+    0 1px 1px -0.5px rgba(11, 26, 20, 0.05),
+    0 3px 3px -1.5px rgba(11, 26, 20, 0.05),
+    0 6px 6px -3px rgba(11, 26, 20, 0.05),
+    0 12px 12px -6px rgba(11, 26, 20, 0.05),
+    0 24px 24px -12px rgba(11, 26, 20, 0.05);
+  --shadow-lg:
+    0 2.8px 2.2px rgba(11, 26, 20, 0.03),
+    0 6.7px 5.3px rgba(11, 26, 20, 0.043),
+    0 12.5px 10px rgba(11, 26, 20, 0.054),
+    0 22.3px 17.9px rgba(11, 26, 20, 0.065),
+    0 41.8px 33.4px rgba(11, 26, 20, 0.077),
+    0 100px 80px rgba(11, 26, 20, 0.1);
+}
+
+.on-dark {
+  --crumb: rgba(255, 255, 255, 0.5);
+  --crumb-active: rgba(255, 255, 255, 0.92);
+  --crumb-sep: rgba(255, 255, 255, 0.25);
+  --tag-bg: rgba(255, 255, 255, 0.06);
+  --tag-border: rgba(255, 255, 255, 0.16);
+  --tag-fg: rgba(255, 255, 255, 0.75);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.6;
+    overflow-x: hidden;
+    font-optical-sizing: auto;
+    /* Paper: a warm ground with a barely-there diagonal weave, so large empty
+       regions read as material rather than as flat empty colour. */
+    background-color: var(--color-cream);
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(11, 26, 20, 0.016) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    line-height: 1.04;
+    text-wrap: balance;
+    font-weight: 700;
+  }
+  /* Archivo needs more negative tracking than Inter Tight did at display size;
+     without it the counters open up and the headline goes soft. */
+  h1 { letter-spacing: -0.04em; }
+  h2 { letter-spacing: -0.032em; }
+  h3, h4 { letter-spacing: -0.018em; }
+
+  p { text-wrap: pretty; }
+
+  /* Numbers that sit in columns or change in place must not jitter. */
+  time, .tnum { font-variant-numeric: tabular-nums; }
+
+  /* Tailwind v4's preflight drops the browser's `cursor: pointer` on buttons,
+     so every button on the site was showing an arrow. Put it back. */
+  :where(button, [role="button"], summary):not(:disabled) { cursor: pointer; }
+  :where(button, [role="button"]):disabled { cursor: not-allowed; }
+
+  /* A 3px ring reads as deliberate rather than as a browser default, and stays
+     visible against both the paper and the dark surfaces. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Inline prose links: descenders should not collide with the underline. */
+  :where(p, li) > a[href] { text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+  ::selection { background: var(--color-signal); color: var(--color-ink); }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------------
+     Shell + container guides.
+     Hairlines sit exactly on the content edge and repeat in every section,
+     so the container width is legible as structure rather than implied.
+     --------------------------------------------------------------------- */
+  .shell {
+    position: relative;
+    width: 100%;
+    max-width: 1560px;
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* The container guide lines and corner marks were removed: repeated on every
+     section they read as a frame drawn around the page rather than as
+     structure. Hierarchy now comes from surface, spacing and type alone. */
+
+  /* ---------------------------------------------------------------------
+     Type roles
+     --------------------------------------------------------------------- */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .h-display {
+    font-size: clamp(3rem, 8.5vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.9;
+    letter-spacing: -0.042em;
+  }
+  .h-section {
+    font-size: clamp(2rem, 4.4vw, 3.75rem);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: -0.032em;
+  }
+  .h-card { font-size: clamp(1.0625rem, 1.3vw, 1.3125rem); }
+  .lede {
+    font-size: clamp(1.0625rem, 1.15vw, 1.1875rem);
+    line-height: 1.6;
+    color: var(--color-slate);
+    font-weight: 300;
+    max-width: 62ch;
+  }
+  .prose-measure { max-width: 68ch; }
+
+  .rule { border-top: 1px solid var(--color-line); }
+
+  /* WCAG 2.2 AA target size (24×24 CSS px). Stacked navigation links measured
+     16–17px tall; the inline-text exception does not cover a list of links, so
+     the hit area grows without disturbing the visual rhythm. */
+  .hit-row {
+    display: inline-block;
+    padding-block: 0.3125rem;
+    min-height: 24px;
+  }
+}
+
+@layer utilities {
+  .shadow-sm-x { box-shadow: var(--shadow-sm); }
+  .shadow-md-x { box-shadow: var(--shadow-md); }
+  .shadow-lg-x { box-shadow: var(--shadow-lg); }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Scroll reveal: one calm fade-up per section, never per element. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+  .reveal[data-shown="true"] { opacity: 1; transform: none; }
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 200;
+  background: var(--color-ink);
+  color: var(--color-milk);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+.skip-link:focus { top: 0.75rem; }
+
+
+/* =========================================================================
+   MOTION & MEDIA
+   Each effect below has one job. Anything that only decorates was left out —
+   §12.1 rules out animation that costs institutional credibility.
+   ========================================================================= */
+
+/* --- Photography ------------------------------------------------------- */
+.media-frame::after {
+  /* A single curtain wipe as the image arrives. Doubles as the loading state,
+     so there is never a flash of an undecoded photo. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--color-mist);
+  transform: translateY(0);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.media-frame[data-shown="true"][data-loaded="true"]::after { transform: translateY(-101%); }
+
+.media-img {
+  /* Graded slightly toward the palette at rest, released on hover. */
+  filter: saturate(0.86) contrast(1.03);
+  transition: filter 0.6s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.media-frame.is-interactive:hover .media-img,
+.media-frame.is-interactive:focus-within .media-img {
+  filter: saturate(1.02) contrast(1.02);
+  transform: scale(1.045);
+}
+
+/* --- Word reveal ------------------------------------------------------- */
+.word-reveal .w { display: inline-block; overflow: hidden; vertical-align: bottom; }
+.word-reveal .w > span {
+  display: inline-block;
+  transform: translateY(105%);
+  opacity: 0;
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.word-reveal[data-shown="true"] .w > span { transform: none; opacity: 1; }
+
+/* --- Route change ------------------------------------------------------ */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.page-enter { animation: page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* --- Mega-menu column stagger ------------------------------------------ */
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+.menu-in { animation: menu-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0ms); }
+
+/* --- Link underline sweep ---------------------------------------------- */
+.link-sweep { position: relative; }
+.link-sweep::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-sweep:hover::after, .link-sweep:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* =========================================================================
+   INTERACTIVE CARD
+   The most repeated element on the site, so it carries the most weight. Four
+   things move together on hover, all from one gesture: the surface lifts, a
+   soft light follows the pointer across it, the accent rule draws in, and the
+   arrow hands off to its replacement. Every one of them also fires on
+   :focus-within, so a keyboard gets the same card a mouse does.
+   ========================================================================= */
+.card-i {
+  position: relative;
+  isolation: isolate;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+}
+
+/* Light follows the pointer. Tinted with the card's own direction accent, at an
+   opacity low enough that you notice the card is lit, not that it has a glow. */
+.card-i::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Behind the content rather than under a z-index:1 child stack. `isolation`
+     above keeps -1 inside the card, and it means the children no longer need
+     to be positioned to sit on top — which is what lets a stretched link
+     resolve against the card instead of against its own wrapper. */
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  background: radial-gradient(
+    22rem circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent, var(--color-brand)) 13%, transparent),
+    transparent 68%
+  );
+}
+.card-i:hover::before,
+.card-i:focus-within::before { opacity: 1; }
+
+.card-i:hover,
+.card-i:focus-within {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-line-strong);
+}
+.card-i > * { z-index: 1; }
+
+/* Cells inside a hairline grid share edges with their neighbours, so lifting one
+   tears the grid apart. They keep the light, the rule and the arrow, and trade
+   the lift for a surface change. */
+.card-i.is-flush:hover,
+.card-i.is-flush:focus-within {
+  transform: none;
+  box-shadow: none;
+  border-color: inherit;
+  background-color: var(--color-parchment);
+}
+
+/* The accent rule across the top, drawn from the left. */
+.card-rule {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  z-index: 2;
+  background: var(--accent, var(--color-brand));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-i:hover .card-rule,
+.card-i:focus-within .card-rule { transform: scaleX(1); }
+
+/* Where the accent is identity rather than decoration — the five directions each
+   own a colour — the rule keeps a resting stub so the coding survives at rest,
+   and completes on hover. */
+.card-rule.is-stub { transform: scaleX(0.16); }
+
+/* Arrow hand-off: the resting arrow leaves to the right as its twin arrives. */
+.card-arrow {
+  position: relative;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  overflow: hidden;
+}
+.card-arrow > * {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-arrow > :last-child { transform: translateX(-160%); }
+.card-i:hover .card-arrow > :first-child,
+.card-i:focus-within .card-arrow > :first-child { transform: translateX(160%); }
+.card-i:hover .card-arrow > :last-child,
+.card-i:focus-within .card-arrow > :last-child { transform: translateX(0); }
+
+/* Stretched link: the title carries the real anchor, and its pseudo-element
+   covers the card so the whole surface is clickable. This is what lets the
+   shortlist button live on the card at all — a button nested inside an anchor
+   is invalid markup, and its click would be swallowed on the way up. */
+.card-link-stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card-title { transition: color 0.35s ease; }
+.card-i:hover .card-title,
+.card-i:focus-within .card-title { color: var(--accent-ink, var(--color-brand-deep)); }
+
+/* =========================================================================
+   INLINE GLOSSARY (§12.3)
+   A term is a button so it can be reached by keyboard and announce its state,
+   but it has to read as a word: `display: inline` so it wraps across lines
+   mid-sentence, and a dashed underline rather than a solid one so it does not
+   look like a link the reader is failing to click.
+   ========================================================================= */
+.term {
+  display: inline;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  background: none;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed var(--color-line-strong);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.term:hover,
+.term[aria-expanded="true"] {
+  color: var(--color-brand-deep);
+  border-bottom-color: var(--color-brand);
+}
+.on-dark .term { border-bottom-color: rgba(255, 255, 255, 0.32); }
+.on-dark .term:hover,
+.on-dark .term[aria-expanded="true"] {
+  color: var(--color-signal);
+  border-bottom-color: var(--color-signal);
+}
+
+.term-panel-in {
+  animation: termIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Opacity only: the panel's transform is set inline and differs depending on
+   whether it flipped above the term, so animating transform here would fight it
+   and make an above-placed panel jump on open. */
+@keyframes termIn {
+  from { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .term-panel-in { animation: none; }
+  .eco-route, .trade-route, .prod-flow { animation: none; stroke-dashoffset: 0; }
+  .sup-band { transform: none; opacity: 1; transition: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .media-frame::after { display: none; }
+  .media-img { transform: none !important; }
+  .word-reveal .w > span { transform: none; opacity: 1; transition: none; }
+  .page-enter, .menu-in { animation: none; }
+  .card-i, .card-i:hover, .card-i:focus-within { transform: none; }
+  .card-i::before { display: none; }
+  .card-rule { transition: none; }
+  .card-arrow > * { transition: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================================
+   PRINT — spec sheets (§10.2/10.3) and the assembled plan.
+
+   Not an afterthought stylesheet that hides the navigation: paper is a
+   different medium with a different job. On screen the page persuades and
+   routes; on paper it is evidence, circulated to people who will never visit
+   the site. So the interface disappears entirely, the dark bands become paper,
+   the WebGL goes, and what is left is a document with a masthead, a source
+   address and page numbers.
+
+   Sizes are in points, because that is the unit the page is actually measured
+   in — rem here would inherit a root size that means nothing to a printer.
+   ========================================================================= */
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm 18mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    background-image: none !important;
+    color: #000;
+    font-size: 10pt;
+    line-height: 1.45;
+  }
+
+  /* The whole interface layer. Anything whose job is to take you somewhere
+     else has no job on a sheet of paper. */
+  .skip-link,
+  .no-print,
+  canvas,
+  [role="dialog"],
+  [role="tooltip"] { display: none !important; }
+
+  .print-only { display: block !important; }
+
+  /* Full measure: the on-screen container is centred inside a viewport that
+     does not exist here, and the printer already applied its own margin. */
+  .shell {
+    max-width: none !important;
+    padding-inline: 0 !important;
+  }
+
+  /* Screen rhythm is far too generous at A4. Compress vertical space rather
+     than re-declaring it per section. */
+  section, .shell { padding-block: 0.5rem !important; }
+
+  /* Inverted bands: ink-on-paper costs a toner cartridge and reads worse. */
+  .on-dark,
+  .bg-ink, .bg-graphite {
+    background: #fff !important;
+    color: #000 !important;
+    border-top: 1pt solid #000;
+  }
+  .on-dark *, .bg-ink *, .bg-graphite * { color: #000 !important; }
+
+  /* Cards and rows are the content on a spec sheet; they must not be split
+     across a page break, and their screen decoration is noise on paper. */
+  .card-i, li, tr, .print-keep {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .card-i::before, .card-rule, .card-arrow { display: none !important; }
+  .card-i { border: 0.5pt solid #999 !important; }
+
+  h1, h2, h3, h4 {
+    break-after: avoid;
+    page-break-after: avoid;
+    color: #000;
+  }
+  h1 { font-size: 20pt; }
+  h2 { font-size: 13pt; }
+  h3 { font-size: 11pt; }
+  p, li, dd, dt { color: #000; orphans: 3; widows: 3; }
+
+  /* Links keep their text and lose their colour: a blue word on a monochrome
+     printout is just a grey word the reader cannot click. The document's own
+     address is printed in the masthead instead. */
+  a { color: #000 !important; text-decoration: none !important; }
+
+  /* A glossary term is a control on screen. On paper it is a word. */
+  .term { border-bottom: 0 !important; color: #000 !important; }
+
+  /* Reveal animations start at opacity 0 and are triggered by the viewport.
+     Printing a long page never scrolls it, so without this most of the
+     document prints blank — which is exactly what happened first time. */
+  .reveal, .page-enter, .word-reveal .w > span {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    break-inside: avoid;
+  }
+  /* Photography is illustration here; it must not eat a third of the page. */
+  .media-frame, figure { max-height: 55mm; overflow: hidden; }
+
+  /* The hero heading is suppressed on pages whose masthead already states the
+     title, and its bottom margin would otherwise be left behind as a gap. */
+  main .lede { margin-top: 0 !important; }
+
+  .print-header {
+    border-bottom: 1.5pt solid #000;
+    padding-bottom: 4mm;
+    margin-bottom: 6mm;
+  }
+  .print-header-top {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+    font-family: var(--font-mono);
+    font-size: 7.5pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .print-header-top img { width: 7mm; height: 7mm; }
+  .print-brand { font-family: var(--font-display); font-weight: 700; font-size: 10pt; letter-spacing: 0.02em; }
+  .print-kind { color: #444; }
+  /* Pushed to the right edge so the strip reads brand → kind … date. */
+  .print-date { margin-left: auto; color: #444; }
+  .print-title { font-size: 22pt; line-height: 1.05; margin-top: 4mm; }
+  .print-meta { font-family: var(--font-mono); font-size: 8pt; color: #444; margin-top: 2mm; }
+  .print-url {
+    font-family: var(--font-mono);
+    font-size: 7.5pt;
+    color: #444;
+    margin-top: 3mm;
+    word-break: break-all;
+  }
+  .print-footnote {
+    margin-top: 8mm;
+    padding-top: 3mm;
+    border-top: 0.5pt solid #999;
+    font-size: 8pt;
+    color: #444;
+  }
+}
+
+/* =========================================================================
+   LATERAL MOTION
+   Everything in a direction section reads the same clock — `--p`, written by
+   useSectionProgress — so the parts drift at different rates but never fall
+   out of step. Negative rates move against the scroll, positive with it; the
+   difference between them is what makes the panel feel like it is passing you
+   rather than sliding as one flat sheet.
+
+   Multiples of the same variable, not separate animations: one number, one
+   frame, one composited transform per element.
+   ========================================================================= */
+.lat { will-change: transform; }
+.lat-back  { transform: translate3d(calc((var(--p, 0.5) - 0.5) * -3rem), 0, 0); }
+.lat-name  { transform: translate3d(calc((var(--p, 0.5) - 0.5) * -7rem), 0, 0); }
+.lat-lede  { transform: translate3d(calc((var(--p, 0.5) - 0.5) * -3.5rem), 0, 0); }
+.lat-body  { transform: translate3d(calc((var(--p, 0.5) - 0.5) *  5rem), 0, 0); }
+.lat-aside { transform: translate3d(calc((var(--p, 0.5) - 0.5) *  8rem), 0, 0); }
+
+@media (max-width: 767px) {
+  /* On a phone the section is nearly as tall as the viewport, so `--p` barely
+     moves and the drift would only ever be a wobble. Turn it off rather than
+     ship a diluted version of the effect. */
+  .lat-back, .lat-name, .lat-lede, .lat-body, .lat-aside { transform: none; }
+}
+
+/* =========================================================================
+   ECOSYSTEM CONSTELLATION
+   The edges draw themselves as the section arrives, so the reader watches nine
+   unrelated points become an industry. `--r` is the reveal clock (rest 1), not
+   the drift clock, so with motion off the network is simply already there.
+
+   `pathLength="100"` normalises every line to the same dash geometry, which is
+   what lets one expression drive thirteen edges of different real lengths.
+   ========================================================================= */
+.eco-edge {
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(clamp(0, (0.62 - var(--r, 1)) * 3.2, 1) * 100);
+  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+.eco-node {
+  opacity: clamp(0, (var(--r, 1) - 0.16 - var(--i, 0) * 0.022) * 9, 1);
+}
+
+/* Route and flow lines. Each draws itself once when it appears — a route that
+   simply exists teaches nothing; one you watch being traced shows direction,
+   order and where it stops. `pathLength=100` normalises geometry so a single
+   duration reads the same on a two-stop route and a five-stop one. */
+.eco-route, .trade-route, .prod-flow {
+  stroke-dasharray: 100;
+  animation: drawLine 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.trade-spine {
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(clamp(0, (0.6 - var(--r, 1)) * 3, 1) * 100);
+  transition: opacity 0.4s ease;
+}
+@keyframes drawLine {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* =========================================================================
+   SUPPLY BUILD ORDER
+   The bands rise in sequence, footing first, so the order is demonstrated
+   before the reader is asked to do anything. Height grows down the stack: the
+   footing carries the structure, and looks like it.
+   ========================================================================= */
+.sup-band {
+  transform: translateY(0.75rem);
+  opacity: 0;
+  transition:
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.6s ease,
+    border-color 0.4s ease,
+    background-color 0.4s ease;
+  transition-delay: calc(var(--i, 0) * 110ms);
+  min-height: calc(3.25rem + (4 - var(--i, 0)) * 0.35rem);
+}
+.sup-band.is-in { transform: translateY(0); opacity: 1; }
+
+/* =========================================================================
+   SERVICE PROGRESS RULE
+   The ladder's rail fills as the section passes, so the sequence is felt
+   before it is read. Height only — the grey rule behind it never moves.
+   ========================================================================= */
+.svc-progress {
+  height: calc(clamp(0, (var(--r, 1) - 0.1) * 1.5, 1) * 100%);
+  max-height: calc(100% - 2rem);
+  transition: height 0.12s linear;
+}
+
+/* =========================================================================
+   HORIZONTAL TAKEOVER
+   The alternative treatment for the same five sections. The wrapper is as tall
+   as the distance the track travels, so the scrollbar keeps telling the truth
+   about how much is left.
+   ========================================================================= */
+.hz-track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+  transform: translate3d(calc(var(--hz, 0) * -100vw), 0, 0);
+}
+.hz-panel {
+  width: 100vw;
+  height: 100%;
+  flex: 0 0 100vw;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lat-back, .lat-name, .lat-lede, .lat-body, .lat-aside { transform: none; }
+}
+
+/* The print-only blocks must not appear on screen. Declared outside the print
+   query so the rule holds without depending on media-query order. */
+.print-only { display: none; }
